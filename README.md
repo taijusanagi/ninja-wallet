@@ -1,3 +1,5 @@
 # Ninja Wallet
 
-This is ninja-wallet submission repository
+This is Ninja Wallet submission repository
+
+![key](./docs/key.png)

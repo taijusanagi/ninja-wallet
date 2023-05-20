@@ -35,7 +35,6 @@ export class NinjaAccountAPI extends BaseAccountAPI {
     this.factoryAddress = params.factoryAddress;
     this.userId = params.userId;
     this.salt = params.salt;
-
     this._entryPointView = EntryPoint__factory.connect(params.entryPointAddress, params.provider).connect(
       ethers.constants.AddressZero
     );
@@ -56,8 +55,10 @@ export class NinjaAccountAPI extends BaseAccountAPI {
         throw new Error("no factory to get initCode");
       }
     }
-
-    return hexConcat([this.factory.address, this.factory.interface.encodeFunctionData("createAccount", ["0", "0"])]);
+    return hexConcat([
+      this.factory.address,
+      this.factory.interface.encodeFunctionData("createAccount", [this.userId, this.salt]),
+    ]);
   }
 
   async getNonce(): Promise<BigNumber> {
