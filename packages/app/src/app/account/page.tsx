@@ -54,13 +54,25 @@ export default function Home() {
     }
     setMode("calc");
     ninjaAccountAPI.createUnsignedUserOp({ target: to, data: "0x" }).then((userOp) => {
+      userOp = {
+        ...userOp,
+        callGasLimit: 1000000,
+        preVerificationGas: 1000000,
+      };
       console.log("userOp", userOp);
       ninjaAccountAPI.getUserOpHash(userOp).then((userOpHash) => {
         console.log("userOpHash", userOpHash);
         setUserOpHash(userOpHash);
-        ethers.utils.resolveProperties(userOp).then((resolvedUserOp) => {
+        ethers.utils.resolveProperties(userOp).then((userOp) => {
+          userOp = {
+            ...userOp,
+            maxFeePerGas: userOp.maxFeePerGas.toString(),
+            maxPriorityFeePerGas: userOp.maxPriorityFeePerGas.toString(),
+            nonce: userOp.nonce.toString(),
+            verificationGasLimit: userOp.verificationGasLimit.toString(),
+          };
           console.log("set user op in local storage");
-          localStorage.setItem(userOpHash, JSON.stringify(resolvedUserOp));
+          localStorage.setItem(userOpHash, JSON.stringify(userOp));
           setMode("sign");
         });
       });
