@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  SismoConnectButton as _SismoConnectButton,
+  SismoConnectButton as SismoConnectButton,
   AuthType,
   SismoConnectClientConfig,
 } from "@sismo-core/sismo-connect-react";
@@ -38,7 +38,7 @@ export default function Home() {
         <div className="mt-8">
           {!responseBytes && (
             <>
-              <_SismoConnectButton
+              <SismoConnectButton
                 config={config}
                 auth={{ authType: AuthType.VAULT }}
                 signature={{ message: secret }}
