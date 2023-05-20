@@ -1,20 +1,13 @@
 "use client";
 
-import {
-  SismoConnectButton as SismoConnectButton,
-  AuthType,
-  SismoConnectClientConfig,
-} from "@sismo-core/sismo-connect-react";
+import { SismoConnectButton, AuthType, SismoConnectClientConfig } from "@sismo-core/sismo-connect-react";
 import { useState } from "react";
 import { Hero } from "@/components/Hero";
+import { sismoConfig } from "@/lib/sismo";
 
 export default function Home() {
   const [responseBytes, setResponseBytes] = useState("");
   const [secret, setSecret] = useState("");
-
-  const config: SismoConnectClientConfig = {
-    appId: "0x49c751f1595e8b3016096a7df01d2a96",
-  };
 
   return (
     <main>
@@ -24,14 +17,14 @@ export default function Home() {
           {!responseBytes && (
             <>
               <SismoConnectButton
-                config={config}
+                config={sismoConfig}
                 auth={{ authType: AuthType.VAULT }}
                 signature={{ message: secret || "default" }}
                 onResponseBytes={async (bytes: string) => {
                   fetch;
                   setResponseBytes(bytes);
                 }}
-                callbackUrl={`${window.location.href}api/callback/signin`}
+                callbackUrl={`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/callback/signin`}
               />
               <input
                 type="text"

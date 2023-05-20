@@ -1,21 +1,13 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
-
-/* solhint-disable avoid-low-level-calls */
-/* solhint-disable no-inline-assembly */
-/* solhint-disable reason-string */
 
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@account-abstraction/contracts/core/BaseAccount.sol";
 import "@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol";
 import "@sismo-core/sismo-connect-solidity/contracts/libs/SismoLib.sol";
 
-/**
- * NinjaAccount
- *  this is sample anonymous account.
- *  has execute, eth handling methods
- *  has a Sismo proof verifier that can send requests through the entryPoint.
- */
+import "hardhat/console.sol";
+
 contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
     uint256 private _userId; // Sismo User ID
     IEntryPoint private immutable _entryPoint;
@@ -25,12 +17,10 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
         uint256 indexed userId
     );
 
-    /// @inheritdoc BaseAccount
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return _entryPoint;
     }
 
-    // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
 
     constructor(IEntryPoint anEntryPoint) {
@@ -38,9 +28,6 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
         _disableInitializers();
     }
 
-    /**
-     * execute a transaction (called directly from owner, or by entryPoint)
-     */
     function execute(
         address dest,
         uint256 value,
@@ -50,9 +37,6 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
         _call(dest, value, func);
     }
 
-    /**
-     * execute a sequence of transactions
-     */
     function executeBatch(
         address[] calldata dest,
         bytes[] calldata func
@@ -64,11 +48,6 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
         }
     }
 
-    /**
-     * @dev The _entryPoint member is immutable, to reduce gas consumption.  To upgrade EntryPoint,
-     * a new implementation of SimpleAccount must be deployed with the new EntryPoint address, then upgrading
-     * the implementation by calling `upgradeTo()`
-     */
     function initialize(uint256 userId) public virtual initializer {
         _initialize(userId);
     }
@@ -78,12 +57,12 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
         emit NinjaAccountInitialized(_entryPoint, _userId);
     }
 
-    /// implement template method of BaseAccount
     function _validateSignature(
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
         // TODO: implement Sismo proof verification
+
         return 0;
     }
 

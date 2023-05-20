@@ -1,30 +1,92 @@
 "use client";
 
-import {
-  SismoConnectButton as SismoConnectButton,
-  AuthType,
-  SismoConnectClientConfig,
-} from "@sismo-core/sismo-connect-react";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { ethers } from "ethers";
+
+import { SismoConnectButton, AuthType, useSismoConnect } from "@sismo-core/sismo-connect-react";
 import { Hero } from "@/components/Hero";
+import { sismoConfig } from "@/lib/sismo";
+import { HttpRpcClient } from "@account-abstraction/sdk";
+import { NinjaAccountAPI } from "../../../../contracts/lib/account-abstraction/NinjaAccountAPI";
+import { rpc } from "../../../../contracts/lib/web3";
+
+import deployments from "../../../../contracts/deployments.json";
+const { entryPointAddress, factoryAddress } = deployments;
+
+const bundler = new HttpRpcClient(process.env.NEXT_PUBLIC_BUNDLER_API || "", entryPointAddress, 80001);
 
 export default function Home() {
-  const [account, setAccount] = useState("0x387B58A25B9ea973a562afB09670A272F3A29D9A");
-  const [useOpHash, setUserOpHash] = useState("");
+  const searchParams = useSearchParams();
+  const { responseBytes } = useSismoConnect({ config: sismoConfig });
+  const [ninjaAccountAPI, setNinjaAccountAPI] = useState<NinjaAccountAPI>();
+  const [account, setAccount] = useState(ethers.constants.AddressZero);
+  const [mode, setMode] = useState<"input" | "calc" | "sign" | "send">("input");
+  const [to, setTo] = useState("");
+  const [userOpHash, setUserOpHash] = useState("");
+  const [userOp, setUserOp] = useState();
 
-  const config: SismoConnectClientConfig = {
-    appId: "0x49c751f1595e8b3016096a7df01d2a96",
-  };
+  useEffect(() => {
+    const userId = searchParams.get("userId");
+    const salt = searchParams.get("salt");
+    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    if (!userId || !salt) {
+      return;
+    }
+    const ninjaAccountAPI = new NinjaAccountAPI({
+      entryPointAddress,
+      factoryAddress,
+      userId,
+      salt,
+      provider,
+    });
+    setNinjaAccountAPI(ninjaAccountAPI);
+    ninjaAccountAPI.getAccountAddress().then((account) => {
+      console.log("account", account);
+      setAccount(account);
+    });
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!ninjaAccountAPI || !account || !ethers.utils.isAddress(to)) {
+      return;
+    }
+    setMode("calc");
+    ninjaAccountAPI.createUnsignedUserOp({ target: to, data: "0x" }).then((userOp) => {
+      console.log("userOp", userOp);
+      ninjaAccountAPI.getUserOpHash(userOp).then((userOpHash) => {
+        console.log("userOpHash", userOpHash);
+        setUserOpHash(userOpHash);
+        ethers.utils.resolveProperties(userOp).then((resolvedUserOp) => {
+          console.log("set user op in local storage");
+          localStorage.setItem(userOpHash, JSON.stringify(resolvedUserOp));
+          setMode("sign");
+        });
+      });
+    });
+  }, [ninjaAccountAPI, account, to]);
+
+  useEffect(() => {
+    const userOpHash = searchParams.get("userOpHash");
+    if (!ninjaAccountAPI || !responseBytes || !userOpHash) {
+      return;
+    }
+    console.log("responseBytes", responseBytes);
+    setMode("send");
+    const userOpString = localStorage.getItem(userOpHash) || "";
+    const userOp = JSON.parse(userOpString);
+    userOp.signature = responseBytes;
+    console.log("userOp", userOp);
+    setUserOp(userOp);
+  }, [ninjaAccountAPI, responseBytes, searchParams]);
 
   return (
     <main>
       <div className="bg-gradient-to-r from-custom-1 to-custom-2 text-white h-screen w-full flex flex-col items-center justify-center text-center text-white p-8">
         <Hero />
         <div className="mt-8">
-          <div className="relative bg-gradient-to-r from-custom-2 to-custom-1 rounded-lg py-4 px-8 text-left">
+          <div className="relative bg-gradient-to-r from-custom-2 to-custom-1 rounded-lg p-8 text-left">
             <AiOutlineClose
               className="absolute top-4 right-4 text-white cursor-pointer"
               onClick={() => {
@@ -36,16 +98,52 @@ export default function Home() {
               <p className="mt-1 text-xs">{account}</p>
             </div>
             <div className="mt-4">
-              <SismoConnectButton
-                overrideStyle={{
-                  width: "100%",
-                }}
-                config={config}
-                auth={{ authType: AuthType.VAULT }}
-                signature={{ message: useOpHash }}
-                onResponseBytes={async (bytes: string) => {}}
-                text="Send Transaction"
-              />
+              {mode !== "send" && (
+                <>
+                  <label className="text-md font-medium">Transfer All Assets To</label>
+                  <input
+                    type="text"
+                    className="mt-2 block w-full h-10 px-4 rounded-md border-gray-300 shadow-sm outline-none text-gray-800 text-xs"
+                    placeholder="Ethereum Address"
+                    value={to}
+                    onChange={(e) => {
+                      setTo(e.target.value);
+                    }}
+                  />
+                </>
+              )}
+              {(mode === "calc" || mode === "sign") && (
+                <SismoConnectButton
+                  loading={mode != "sign"}
+                  overrideStyle={{
+                    width: "100%",
+                    marginTop: "12px",
+                  }}
+                  config={sismoConfig}
+                  auth={{ authType: AuthType.VAULT }}
+                  signature={{ message: userOpHash }}
+                  text={userOpHash ? "Sign UserOp with Sismo" : "Creating User Op..."}
+                  callbackUrl={`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/callback/tx`}
+                />
+              )}
+              {mode === "send" && (
+                <button
+                  className={`mb-4 border text-white py-2 px-4 rounded-md w-full ${
+                    (account == ethers.constants.AddressZero || !userOp) && "opacity-50 cursor-not-allowed"
+                  }`}
+                  disabled={account == ethers.constants.AddressZero || !userOp}
+                  onClick={async () => {
+                    console.log("send tx");
+                    if (!userOp) {
+                      return;
+                    }
+                    const tx = await bundler.sendUserOpToBundler(userOp);
+                    console.log("requested", tx);
+                  }}
+                >
+                  Send Tx
+                </button>
+              )}
             </div>
           </div>
         </div>

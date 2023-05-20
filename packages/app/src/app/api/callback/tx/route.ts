@@ -1,7 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { SismoConnectVerifiedResult, AuthType, SismoConnect } from "@sismo-core/sismo-connect-server";
-import { ethers } from "ethers";
 
 import { unCompressResponse } from "@sismo-core/sismo-connect-client/src/utils/unCompressResponse";
 
@@ -9,7 +8,7 @@ import { sismoConfig } from "@/lib/sismo";
 const sismoConnect = SismoConnect(sismoConfig);
 
 export async function GET(request: NextRequest) {
-  console.log("callback/signin");
+  console.log("callback/tx");
   const url = request.nextUrl.clone();
   const sismoConnectResponseCompressed = request.nextUrl.searchParams.get("sismoConnectResponseCompressed");
   if (!sismoConnectResponseCompressed) {
@@ -24,15 +23,11 @@ export async function GET(request: NextRequest) {
     signature: { message },
   });
   const userId = result.getUserId(AuthType.VAULT) || "";
-  let messageBytes = ethers.utils.toUtf8Bytes(message);
-  let salt = ethers.utils.keccak256(messageBytes);
+  const salt = cookieStore.get("salt")?.value || "";
+  let userOpHash = message;
   url.pathname = `/account`;
-  url.searchParams.delete("sismoConnectResponseCompressed");
   url.searchParams.set("userId", userId);
   url.searchParams.set("salt", salt);
-  cookieStore.set({
-    name: "salt",
-    value: salt,
-  });
+  url.searchParams.set("userOpHash", userOpHash);
   return NextResponse.redirect(url);
 }
