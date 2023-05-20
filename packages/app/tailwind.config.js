@@ -18,9 +18,10 @@ module.exports = {
         },
       },
       colors: {
-        "custom-blue-1": "#15203B",
-        "custom-blue-2": "#1B2B52",
-        "custom-blue-3": "#16203B",
+        "custom-1": "#15203B",
+        "custom-2": "#1B2B52",
+        "custom-3": "#1E2845",
+        "custom-4": "#414970",
       },
       backgroundImage: (theme) => ({
         "gradient-custom": "linear-gradient(to right, var(--tw-gradient-stops))",
