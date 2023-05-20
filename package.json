@@ -1,0 +1,31 @@
+{
+  "name": "ethdams",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/**"
+  ],
+  "scripts": {
+    "prepare": "husky install",
+    "build": "run-s build:contracts build:app",
+    "build:app": "yarn workspace @ethdams/app build",
+    "build:contracts": "yarn workspace @ethdams/contracts build",
+    "test": "run-p test:*",
+    "test:contracts": "yarn workspace @ethdams/contracts test",
+    "lint": "run-p lint:*",
+    "lint:app": "yarn workspace @ethdams/app lint",
+    "lint:contracts": "yarn workspace @ethdams/contracts lint"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.2.0",
+    "@commitlint/config-conventional": "^17.2.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "npm-run-all": "^4.1.5"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --cache --fix",
+    "*.--write": "prettier --write"
+  }
+}
