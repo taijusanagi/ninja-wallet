@@ -1,2 +1,3 @@
-# ethdams
-This is ETHDams submission repository
+# Ninja Wallet
+
+This is ninja-wallet submission repository

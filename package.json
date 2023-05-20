@@ -1,5 +1,5 @@
 {
-  "name": "ethdams",
+  "name": "ninja-wallet",
   "version": "0.0.1",
   "license": "MIT",
   "private": true,
@@ -9,13 +9,13 @@
   "scripts": {
     "prepare": "husky install",
     "build": "run-s build:contracts build:app",
-    "build:app": "yarn workspace @ethdams/app build",
-    "build:contracts": "yarn workspace @ethdams/contracts build",
+    "build:app": "yarn workspace @ninja-wallet/app build",
+    "build:contracts": "yarn workspace @ninja-wallet/contracts build",
     "test": "run-p test:*",
-    "test:contracts": "yarn workspace @ethdams/contracts test",
+    "test:contracts": "yarn workspace @ninja-wallet/contracts test",
     "lint": "run-p lint:*",
-    "lint:app": "yarn workspace @ethdams/app lint",
-    "lint:contracts": "yarn workspace @ethdams/contracts lint"
+    "lint:app": "yarn workspace @ninja-wallet/app lint",
+    "lint:contracts": "yarn workspace @ninja-wallet/contracts lint"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.2.0",
