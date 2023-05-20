@@ -133,7 +133,7 @@ export default function Home() {
                   }}
                   config={sismoConfig}
                   auth={{ authType: AuthType.VAULT }}
-                  signature={{ message: userOpHash }}
+                  // signature={{ message: userOpHash }}
                   text={userOpHash ? "Sign UserOp with Sismo" : "Creating User Op..."}
                   callbackUrl={`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/callback/tx`}
                 />

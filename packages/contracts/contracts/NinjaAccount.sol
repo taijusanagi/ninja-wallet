@@ -1,21 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@account-abstraction/contracts/core/BaseAccount.sol";
 import "@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol";
-import "@sismo-core/sismo-connect-solidity/contracts/libs/SismoLib.sol";
+import "./SismoVerifier.sol";
 
 import "hardhat/console.sol";
 
-contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
-    uint256 private _userId; // Sismo User ID
+contract NinjaAccount is BaseAccount, TokenCallbackHandler {
     IEntryPoint private immutable _entryPoint;
-
-    event NinjaAccountInitialized(
-        IEntryPoint indexed entryPoint,
-        uint256 indexed userId
-    );
+    SismoVerifier private immutable _sismoVerifier;
+    uint256 private immutable _userId; // Sismo User ID
 
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return _entryPoint;
@@ -23,9 +18,14 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
 
     receive() external payable {}
 
-    constructor(IEntryPoint anEntryPoint) {
-        _entryPoint = anEntryPoint;
-        _disableInitializers();
+    constructor(
+        IEntryPoint entryPoint_,
+        SismoVerifier sismoVerifier,
+        uint256 userId
+    ) {
+        _entryPoint = entryPoint_;
+        _sismoVerifier = sismoVerifier;
+        _userId = userId;
     }
 
     function execute(
@@ -37,32 +37,11 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
         _call(dest, value, func);
     }
 
-    function executeBatch(
-        address[] calldata dest,
-        bytes[] calldata func
-    ) external {
-        _requireFromEntryPoint();
-        require(dest.length == func.length, "wrong array lengths");
-        for (uint256 i = 0; i < dest.length; i++) {
-            _call(dest[i], 0, func[i]);
-        }
-    }
-
-    function initialize(uint256 userId) public virtual initializer {
-        _initialize(userId);
-    }
-
-    function _initialize(uint256 userId) internal virtual {
-        _userId = userId;
-        emit NinjaAccountInitialized(_entryPoint, _userId);
-    }
-
     function _validateSignature(
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
-        // TODO: implement Sismo proof verification
-
+        _sismoVerifier.verify(userOp.signature);
         return 0;
     }
 

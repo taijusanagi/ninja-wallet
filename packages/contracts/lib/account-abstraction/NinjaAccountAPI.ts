@@ -3,8 +3,6 @@ import { BigNumber, BigNumberish } from "ethers";
 import { hexConcat } from "ethers/lib/utils";
 import { BaseAccountAPI } from "@account-abstraction/sdk";
 
-import { ethers } from "ethers";
-
 import {
   NinjaAccount,
   NinjaAccount__factory,
@@ -12,32 +10,28 @@ import {
   NinjaAccountFactory__factory,
 } from "../../typechain-types";
 
-import { EntryPoint, EntryPoint__factory } from "@account-abstraction/contracts";
-
 export interface NinjaAccountApiParams {
   factoryAddress: string;
+  sismoVerifierAddress: string;
   userId: string;
   salt: string;
 }
 
 export class NinjaAccountAPI extends BaseAccountAPI {
   factoryAddress: string;
+  sismoVerifierAddress: string;
   userId: string;
   salt: string;
 
   accountContract?: NinjaAccount;
   factory?: NinjaAccountFactory;
 
-  private readonly _entryPointView: EntryPoint;
-
   constructor(params: any) {
     super(params);
     this.factoryAddress = params.factoryAddress;
+    this.sismoVerifierAddress = params.sismoVerifierAddress;
     this.userId = params.userId;
     this.salt = params.salt;
-    this._entryPointView = EntryPoint__factory.connect(params.entryPointAddress, params.provider).connect(
-      ethers.constants.AddressZero
-    );
   }
 
   async _getAccountContract(): Promise<NinjaAccount> {
@@ -55,9 +49,15 @@ export class NinjaAccountAPI extends BaseAccountAPI {
         throw new Error("no factory to get initCode");
       }
     }
+
     return hexConcat([
       this.factory.address,
-      this.factory.interface.encodeFunctionData("createAccount", [this.userId, this.salt]),
+      this.factory.interface.encodeFunctionData("createAccount", [
+        this.entryPointAddress,
+        this.sismoVerifierAddress,
+        this.userId,
+        this.salt,
+      ]),
     ]);
   }
 
