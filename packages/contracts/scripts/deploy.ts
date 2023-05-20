@@ -1,23 +1,34 @@
 import { ethers } from "hardhat";
+import { DeterministicDeployer } from "@account-abstraction/sdk";
+import { NinjaAccountFactory__factory } from "../typechain-types";
+
+import * as fs from "fs";
+import * as path from "path";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const deterministicDeployer = new DeterministicDeployer(ethers.provider);
+  const entryPointAddress = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
+  const factoryDeploymentArgument = ethers.utils.defaultAbiCoder.encode(["address"], [entryPointAddress]);
+  const factorDeploymentCode = ethers.utils.solidityPack(
+    ["bytes", "bytes"],
+    [NinjaAccountFactory__factory.bytecode, factoryDeploymentArgument]
+  );
+  const factoryAddress = DeterministicDeployer.getAddress(factorDeploymentCode);
+  if (await deterministicDeployer.isContractDeployed(factoryAddress)) {
+    console.log("Factory already deployed at", factoryAddress);
+  }
+  await deterministicDeployer.deterministicDeploy(factorDeploymentCode);
+  console.log("Factory at", factoryAddress);
 
-  const lockedAmount = ethers.utils.parseEther("0.001");
-
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log(
-    `Lock with ${ethers.utils.formatEther(lockedAmount)}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+  fs.writeFileSync(
+    path.join(__dirname, `../deployments.json`),
+    JSON.stringify({
+      entryPointAddress,
+      factoryAddress,
+    })
   );
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

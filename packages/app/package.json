@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@account-abstraction/sdk": "^0.6.0",
     "@sismo-core/sismo-connect-client": "^0.0.11",
     "@sismo-core/sismo-connect-react": "^0.0.13",
+    "@sismo-core/sismo-connect-server": "^0.0.11",
     "@types/node": "20.2.1",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
