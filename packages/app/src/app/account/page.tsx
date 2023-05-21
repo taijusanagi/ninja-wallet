@@ -9,7 +9,7 @@ import { SismoConnectButton, AuthType, useSismoConnect } from "@sismo-core/sismo
 import { Hero } from "@/components/Hero";
 import { sismoConfig } from "@/lib/sismo";
 import { HttpRpcClient } from "@account-abstraction/sdk";
-import { NinjaAccountAPI } from "../../../../contracts/lib/account-abstraction/NinjaAccountAPI";
+import { NinjaAccountAPI } from "../../lib/account-abstraction/NinjaAccountAPI";
 import { rpc } from "../../../../contracts/lib/web3";
 
 import deployments from "../../../../contracts/deployments.json";

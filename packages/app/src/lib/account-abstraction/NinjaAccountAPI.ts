@@ -8,7 +8,7 @@ import {
   NinjaAccount__factory,
   NinjaAccountFactory,
   NinjaAccountFactory__factory,
-} from "../../typechain-types";
+} from "../../../../contracts/typechain-types";
 
 export interface NinjaAccountApiParams {
   factoryAddress: string;
