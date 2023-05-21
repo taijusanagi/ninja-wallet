@@ -16,9 +16,10 @@ contract NinjaAccountFactory {
 
     function createAccount(
         uint256 userId,
+        bytes16[] memory groupIds,
         uint256 salt
     ) public returns (NinjaAccount) {
-        address addr = getAddress(userId, salt);
+        address addr = getAddress(userId, groupIds, salt);
         uint codeSize = addr.code.length;
         if (codeSize > 0) {
             return NinjaAccount(payable(addr));
@@ -28,7 +29,10 @@ contract NinjaAccountFactory {
                 payable(
                     new ERC1967Proxy{salt: bytes32(salt)}(
                         address(accountImplementation),
-                        abi.encodeCall(NinjaAccount.initialize, (userId))
+                        abi.encodeCall(
+                            NinjaAccount.initialize,
+                            (userId, groupIds)
+                        )
                     )
                 )
             );
@@ -36,6 +40,7 @@ contract NinjaAccountFactory {
 
     function getAddress(
         uint256 userId,
+        bytes16[] memory groupIds,
         uint256 salt
     ) public view returns (address) {
         return
@@ -46,7 +51,10 @@ contract NinjaAccountFactory {
                         type(ERC1967Proxy).creationCode,
                         abi.encode(
                             address(accountImplementation),
-                            abi.encodeCall(NinjaAccount.initialize, (userId))
+                            abi.encodeCall(
+                                NinjaAccount.initialize,
+                                (userId, groupIds)
+                            )
                         )
                     )
                 )

@@ -1,6 +1,6 @@
 "use client";
 
-import { SismoConnectButton, AuthType, SismoConnectClientConfig } from "@sismo-core/sismo-connect-react";
+import { SismoConnectButton, AuthType, ClaimRequest, ClaimType } from "@sismo-core/sismo-connect-react";
 import { useState } from "react";
 import { Hero } from "@/components/Hero";
 import { sismoConfig } from "@/lib/sismo";
@@ -8,6 +8,13 @@ import { sismoConfig } from "@/lib/sismo";
 export default function Home() {
   const [responseBytes, setResponseBytes] = useState("");
   const [secret, setSecret] = useState("");
+
+  const gitcoinPassportClaim: ClaimRequest = {
+    groupId: "0x1cde61966decb8600dfd0749bd371f12",
+    value: 3,
+    claimType: ClaimType.GTE,
+    isOptional: true,
+  };
 
   return (
     <main>
@@ -19,6 +26,7 @@ export default function Home() {
               <SismoConnectButton
                 config={sismoConfig}
                 auth={{ authType: AuthType.VAULT }}
+                claims={[gitcoinPassportClaim]}
                 signature={{ message: secret || "default" }}
                 onResponseBytes={async (bytes: string) => {
                   fetch;

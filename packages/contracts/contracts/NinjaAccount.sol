@@ -11,7 +11,9 @@ import "./SismoVerifier.sol";
 contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
     IEntryPoint private immutable _entryPoint;
     SismoVerifier private immutable _verifier;
-    uint256 private _userId; // Sismo User ID
+
+    uint256 public userId; // Sismo User ID
+    bytes16[] public groupIds; // Sismo Group IDs
 
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return _entryPoint;
@@ -25,8 +27,12 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
         _disableInitializers();
     }
 
-    function initialize(uint256 userId) public virtual initializer {
-        _userId = userId;
+    function initialize(
+        uint256 _userId,
+        bytes16[] memory _groupIds
+    ) public virtual initializer {
+        userId = _userId;
+        groupIds = _groupIds;
     }
 
     function execute(
@@ -45,7 +51,7 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
         (uint256 vaultId, bytes memory signedMessage) = _verifier.verify(
             userOp.signature
         );
-        require(vaultId == _userId, "invalid vaultId id");
+        require(vaultId == userId, "invalid vaultId id");
         require(bytes32(signedMessage) == userOpHash, "invalid signed message");
         return 0;
     }

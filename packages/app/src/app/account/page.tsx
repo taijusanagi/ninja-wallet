@@ -5,7 +5,13 @@ import { AiOutlineClose } from "react-icons/ai";
 import { useSearchParams } from "next/navigation";
 import { ethers } from "ethers";
 
-import { SismoConnectButton, AuthType, useSismoConnect } from "@sismo-core/sismo-connect-react";
+import {
+  SismoConnectButton,
+  AuthType,
+  useSismoConnect,
+  ClaimRequest,
+  ClaimType,
+} from "@sismo-core/sismo-connect-react";
 import { Hero } from "@/components/Hero";
 import { sismoConfig } from "@/lib/sismo";
 import { HttpRpcClient } from "@account-abstraction/sdk";
@@ -30,9 +36,10 @@ export default function Home() {
 
   useEffect(() => {
     const userId = searchParams.get("userId");
+    const groupIds = searchParams.get("groupIds");
     const salt = searchParams.get("salt");
     const provider = new ethers.providers.JsonRpcProvider(rpc);
-    if (!userId || !salt) {
+    if (!userId || !salt || !groupIds) {
       return;
     }
     const ninjaAccountAPI = new NinjaAccountAPI({
@@ -40,6 +47,7 @@ export default function Home() {
       factoryAddress,
       verifierAddress,
       userId,
+      groupIds: Array.isArray(groupIds) ? groupIds : [groupIds],
       salt,
       provider,
     });
@@ -59,7 +67,7 @@ export default function Home() {
       return;
     }
     setMode("calc");
-    ninjaAccountAPI.createUnsignedUserOp({ target: to, data: "0x", value: balance }).then((userOp) => {
+    ninjaAccountAPI.createUnsignedUserOp({ target: to, data: "0x" }).then((userOp) => {
       userOp = {
         ...userOp,
         callGasLimit: ethers.utils.hexlify(100000),

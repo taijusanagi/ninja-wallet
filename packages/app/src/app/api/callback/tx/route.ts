@@ -23,10 +23,12 @@ export async function GET(request: NextRequest) {
     signature: { message },
   });
   const userId = result.getUserId(AuthType.VAULT) || "";
+  const groupIds = cookieStore.get("groupIds")?.value || "";
   const salt = cookieStore.get("salt")?.value || "";
   let userOpHash = message;
   url.pathname = `/account`;
   url.searchParams.set("userId", userId);
+  url.searchParams.set("groupIds", groupIds);
   url.searchParams.set("salt", salt);
   url.searchParams.set("userOpHash", userOpHash);
   return NextResponse.redirect(url);

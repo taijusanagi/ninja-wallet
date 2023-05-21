@@ -14,6 +14,7 @@ export interface NinjaAccountApiParams {
   factoryAddress: string;
   verifierAddress: string;
   userId: string;
+  groupIds: string[];
   salt: string;
 }
 
@@ -21,6 +22,7 @@ export class NinjaAccountAPI extends BaseAccountAPI {
   factoryAddress: string;
   verifierAddress: string;
   userId: string;
+  groupIds: string[];
   salt: string;
 
   accountContract?: NinjaAccount;
@@ -31,6 +33,7 @@ export class NinjaAccountAPI extends BaseAccountAPI {
     this.factoryAddress = params.factoryAddress;
     this.verifierAddress = params.verifierAddress;
     this.userId = params.userId;
+    this.groupIds = params.groupIds;
     this.salt = params.salt;
   }
 
@@ -52,7 +55,7 @@ export class NinjaAccountAPI extends BaseAccountAPI {
 
     return hexConcat([
       this.factory.address,
-      this.factory.interface.encodeFunctionData("createAccount", [this.userId, this.salt]),
+      this.factory.interface.encodeFunctionData("createAccount", [this.userId, this.groupIds, this.salt]),
     ]);
   }
 
