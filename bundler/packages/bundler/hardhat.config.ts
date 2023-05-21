@@ -1,51 +1,54 @@
-import '@nomiclabs/hardhat-ethers'
-import '@nomicfoundation/hardhat-toolbox'
-import 'hardhat-deploy'
+import "@nomiclabs/hardhat-ethers";
+import "@nomicfoundation/hardhat-toolbox";
+import "hardhat-deploy";
 
-import fs from 'fs'
+import fs from "fs";
 
-import { HardhatUserConfig } from 'hardhat/config'
-import { NetworkUserConfig } from 'hardhat/src/types/config'
+import { HardhatUserConfig } from "hardhat/config";
+import { NetworkUserConfig } from "hardhat/src/types/config";
 
-const mnemonicFileName = process.env.MNEMONIC_FILE
-let mnemonic = 'test '.repeat(11) + 'junk'
-if (mnemonicFileName != null && fs.existsSync(mnemonicFileName)) {
-  mnemonic = fs.readFileSync(mnemonicFileName, 'ascii').trim()
+let mnemonic = "test ".repeat(11) + "junk";
+// if (mnemonicFileName != null && fs.existsSync(mnemonicFileName)) {
+//   mnemonic = fs.readFileSync(mnemonicFileName, 'ascii').trim()
+// }
+
+if (process.env.MNEMONIC) {
+  mnemonic = process.env.MNEMONIC;
 }
 
-const infuraUrl = (name: string): string => `https://${name}.infura.io/v3/${process.env.INFURA_ID}`
+const infuraUrl = (name: string): string => `https://${name}.infura.io/v3/${process.env.INFURA_ID}`;
 
-function getNetwork (url: string): NetworkUserConfig {
+function getNetwork(url: string): NetworkUserConfig {
   return {
     url,
     accounts: {
-      mnemonic
-    }
-  }
+      mnemonic,
+    },
+  };
 }
 
-function getInfuraNetwork (name: string): NetworkUserConfig {
-  return getNetwork(infuraUrl(name))
+function getInfuraNetwork(name: string): NetworkUserConfig {
+  return getNetwork(infuraUrl(name));
 }
 
 const config: HardhatUserConfig = {
   typechain: {
-    outDir: 'src/types',
-    target: 'ethers-v5'
+    outDir: "src/types",
+    target: "ethers-v5",
   },
   networks: {
     localhost: {
-      url: 'http://127.0.0.1:8545/',
-      saveDeployments: false
+      url: "http://127.0.0.1:8545/",
+      saveDeployments: false,
     },
-    goerli: getInfuraNetwork('goerli')
+    goerli: getInfuraNetwork("goerli"),
   },
   solidity: {
-    version: '0.8.15',
+    version: "0.8.15",
     settings: {
-      optimizer: { enabled: true }
-    }
-  }
-}
+      optimizer: { enabled: true },
+    },
+  },
+};
 
-export default config
+export default config;
