@@ -1,1 +1,6 @@
-{"entryPointAddress":"0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789","factoryAddress":"0x43b7ab55d522dbb0e52bf07d1cd83b9242371bfe","verifierAddress":"0x50d1a35b104eee65e4de48bbbec8d78ee1a0c8f9","paymasterAddress":"0x9e2a0841892617df7acb0c3ec35ada2dbdf28328"}
+{
+  "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+  "factoryAddress": "0x43b7ab55d522dbb0e52bf07d1cd83b9242371bfe",
+  "verifierAddress": "0x50d1a35b104eee65e4de48bbbec8d78ee1a0c8f9",
+  "paymasterAddress": "0x9e2a0841892617df7acb0c3ec35ada2dbdf28328"
+}
