@@ -4,15 +4,14 @@ import { SismoConnectButton, AuthType, ClaimRequest, ClaimType } from "@sismo-co
 import { useState } from "react";
 import { Hero } from "@/components/Hero";
 import { sismoConfig } from "@/lib/sismo";
+import { gitcoinPassportGroupId } from "../../../contracts/lib/sismo";
 
 export default function Home() {
   const [responseBytes, setResponseBytes] = useState("");
   const [secret, setSecret] = useState("");
 
   const gitcoinPassportClaim: ClaimRequest = {
-    groupId: "0x1cde61966decb8600dfd0749bd371f12",
-    value: 3,
-    claimType: ClaimType.GTE,
+    groupId: gitcoinPassportGroupId,
     isOptional: true,
   };
 

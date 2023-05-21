@@ -13,7 +13,7 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
     SismoVerifier private immutable _verifier;
 
     uint256 public userId; // Sismo User ID
-    bytes16[] public groupIds; // Sismo Group IDs
+    mapping(bytes16 => bool) public isGroupIdIncluded; // Sismo Group ID
 
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return _entryPoint;
@@ -31,8 +31,11 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
         uint256 _userId,
         bytes16[] memory _groupIds
     ) public virtual initializer {
+        //TODO: add verification here
         userId = _userId;
-        groupIds = _groupIds;
+        for (uint256 i = 0; i < _groupIds.length; i++) {
+            isGroupIdIncluded[_groupIds[i]] = true;
+        }
     }
 
     function execute(

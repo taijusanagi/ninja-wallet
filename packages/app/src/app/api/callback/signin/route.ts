@@ -19,20 +19,22 @@ export async function GET(request: NextRequest) {
   const cookieStore = cookies();
   const sismoConnectResponse = JSON.parse(unCompressResponse(sismoConnectResponseCompressed));
   const message = sismoConnectResponse.signedMessage;
-  const { claims } = sismoConnectResponse.proofs.find(({ claims }: any) => claims);
+  const proofs = sismoConnectResponse.proofs?.find(({ claims }: any) => claims);
   const result: SismoConnectVerifiedResult = await sismoConnect.verify(sismoConnectResponse, {
     auths: [{ authType: AuthType.VAULT }],
-    claims,
+    claims: proofs ? proofs.claims : [],
     signature: { message },
   });
   const userId = result.getUserId(AuthType.VAULT) || "";
-  const groupIds = claims.map(({ groupId }: any) => groupId);
+  const groupIds = proofs?.claims.map(({ groupId }: any) => groupId);
   let messageBytes = ethers.utils.toUtf8Bytes(message);
   let salt = ethers.utils.keccak256(messageBytes);
   url.pathname = `/account`;
   url.searchParams.delete("sismoConnectResponseCompressed");
   url.searchParams.set("userId", userId);
-  url.searchParams.set("groupIds", groupIds);
+  if (groupIds) {
+    url.searchParams.set("groupIds", groupIds);
+  }
   url.searchParams.set("salt", salt);
   cookieStore.set({
     name: "groupIds",

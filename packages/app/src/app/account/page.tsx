@@ -5,13 +5,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { useSearchParams } from "next/navigation";
 import { ethers } from "ethers";
 
-import {
-  SismoConnectButton,
-  AuthType,
-  useSismoConnect,
-  ClaimRequest,
-  ClaimType,
-} from "@sismo-core/sismo-connect-react";
+import { SismoConnectButton, AuthType, useSismoConnect } from "@sismo-core/sismo-connect-react";
 import { Hero } from "@/components/Hero";
 import { sismoConfig } from "@/lib/sismo";
 import { HttpRpcClient } from "@account-abstraction/sdk";
@@ -19,7 +13,8 @@ import { NinjaAccountAPI } from "../../../../contracts/lib/account-abstraction/N
 import { rpc } from "../../../../contracts/lib/web3";
 
 import deployments from "../../../../contracts/deployments.json";
-const { entryPointAddress, factoryAddress, verifierAddress } = deployments;
+import { gitcoinPassportGroupId } from "../../../../contracts/lib/sismo";
+const { entryPointAddress, factoryAddress, verifierAddress, paymasterAddress } = deployments;
 
 const bundler = new HttpRpcClient(process.env.NEXT_PUBLIC_BUNDLER_API || "", entryPointAddress, 80001);
 
@@ -39,7 +34,7 @@ export default function Home() {
     const groupIds = searchParams.get("groupIds");
     const salt = searchParams.get("salt");
     const provider = new ethers.providers.JsonRpcProvider(rpc);
-    if (!userId || !salt || !groupIds) {
+    if (!userId || !salt) {
       return;
     }
     const ninjaAccountAPI = new NinjaAccountAPI({
@@ -47,7 +42,7 @@ export default function Home() {
       factoryAddress,
       verifierAddress,
       userId,
-      groupIds: Array.isArray(groupIds) ? groupIds : [groupIds],
+      groupIds: Array.isArray(groupIds) ? groupIds : [groupIds].filter((v) => v),
       salt,
       provider,
     });
@@ -55,7 +50,6 @@ export default function Home() {
     ninjaAccountAPI.getAccountAddress().then((account) => {
       console.log("account", account);
       setAccount(account);
-
       provider.getBalance(account).then((balance) => {
         setBalance(balance);
       });
@@ -66,10 +60,13 @@ export default function Home() {
     if (!ninjaAccountAPI || !account || !ethers.utils.isAddress(to)) {
       return;
     }
+
+    console.log("ninjaAccountAPI.groupIds", ninjaAccountAPI.groupIds);
     setMode("calc");
     ninjaAccountAPI.createUnsignedUserOp({ target: to, data: "0x" }).then((userOp) => {
       userOp = {
         ...userOp,
+        paymasterAndData: ninjaAccountAPI.groupIds.includes(gitcoinPassportGroupId) ? paymasterAddress : "0x",
         callGasLimit: ethers.utils.hexlify(100000),
         preVerificationGas: ethers.utils.hexlify(100000),
         verificationGasLimit: ethers.utils.hexlify(1000000),
