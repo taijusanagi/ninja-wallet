@@ -2,18 +2,54 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/utils/Create2.sol";
+import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "./NinjaAccount.sol";
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 contract NinjaAccountFactory {
+    NinjaAccount public immutable accountImplementation;
+
+    constructor(IEntryPoint _entryPoint, SismoVerifier verifier) {
+        accountImplementation = new NinjaAccount(_entryPoint, verifier);
+    }
+
     function createAccount(
-        IEntryPoint entryPoint,
-        SismoVerifier verifier,
         uint256 userId,
         uint256 salt
     ) public returns (NinjaAccount) {
+        address addr = getAddress(userId, salt);
+        uint codeSize = addr.code.length;
+        if (codeSize > 0) {
+            return NinjaAccount(payable(addr));
+        }
         return
-            new NinjaAccount{salt: bytes32(salt)}(entryPoint, verifier, userId);
+            NinjaAccount(
+                payable(
+                    new ERC1967Proxy{salt: bytes32(salt)}(
+                        address(accountImplementation),
+                        abi.encodeCall(NinjaAccount.initialize, (userId))
+                    )
+                )
+            );
+    }
+
+    function getAddress(
+        uint256 userId,
+        uint256 salt
+    ) public view returns (address) {
+        return
+            Create2.computeAddress(
+                bytes32(salt),
+                keccak256(
+                    abi.encodePacked(
+                        type(ERC1967Proxy).creationCode,
+                        abi.encode(
+                            address(accountImplementation),
+                            abi.encodeCall(NinjaAccount.initialize, (userId))
+                        )
+                    )
+                )
+            );
     }
 }

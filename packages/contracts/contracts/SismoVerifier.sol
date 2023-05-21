@@ -4,9 +4,8 @@ pragma solidity ^0.8.19;
 import "@sismo-core/sismo-connect-solidity/contracts/libs/sismo-connect/SismoConnectLib.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
-// @note:
 contract SismoVerifier is SismoConnect {
     using SismoConnectHelper for SismoConnectVerifiedResult;
     using Strings for uint256;

@@ -57,8 +57,9 @@ export default function Home() {
     ninjaAccountAPI.createUnsignedUserOp({ target: to, data: "0x" }).then((userOp) => {
       userOp = {
         ...userOp,
-        callGasLimit: 1000000,
-        preVerificationGas: 1000000,
+        callGasLimit: ethers.utils.hexlify(100000),
+        preVerificationGas: ethers.utils.hexlify(100000),
+        verificationGasLimit: ethers.utils.hexlify(1000000),
       };
       console.log("userOp", userOp);
       ninjaAccountAPI.getUserOpHash(userOp).then((userOpHash) => {
@@ -67,10 +68,10 @@ export default function Home() {
         ethers.utils.resolveProperties(userOp).then((userOp) => {
           userOp = {
             ...userOp,
-            maxFeePerGas: userOp.maxFeePerGas.toString(),
-            maxPriorityFeePerGas: userOp.maxPriorityFeePerGas.toString(),
-            nonce: userOp.nonce.toString(),
-            verificationGasLimit: userOp.verificationGasLimit.toString(),
+            maxFeePerGas: ethers.utils.hexlify(userOp.maxFeePerGas),
+            maxPriorityFeePerGas: ethers.utils.hexlify(userOp.maxPriorityFeePerGas),
+            nonce: ethers.utils.hexlify(userOp.nonce),
+            verificationGasLimit: ethers.utils.hexlify(userOp.verificationGasLimit.toString()),
           };
           console.log("set user op in local storage");
           localStorage.setItem(userOpHash, JSON.stringify(userOp));
@@ -134,7 +135,7 @@ export default function Home() {
                   }}
                   config={sismoConfig}
                   auth={{ authType: AuthType.VAULT }}
-                  signature={{ message: "0x8221aa5ae5cef8b75f88f917d3a6ee1cf48d98b5c7be913fb925ef04c8720053" }}
+                  signature={{ message: userOpHash }}
                   text={userOpHash ? "Sign UserOp with Sismo" : "Creating User Op..."}
                   callbackUrl={`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/callback/tx`}
                 />

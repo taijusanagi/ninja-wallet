@@ -1,5 +1,1 @@
-{
-  "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-  "factoryAddress": "0x6f8fdec29ba08a0165ed6e75b422146c49e2341e",
-  "verifierAddress": "0xac731983b6a4934c0985d8c7222ff82bb7c7333a"
-}
+{"entryPointAddress":"0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789","factoryAddress":"0x1ef1ac134dea26ebc733b40e2d7e5f051a7f173a","verifierAddress":"0x50d1a35b104eee65e4de48bbbec8d78ee1a0c8f9"}

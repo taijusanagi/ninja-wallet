@@ -52,12 +52,7 @@ export class NinjaAccountAPI extends BaseAccountAPI {
 
     return hexConcat([
       this.factory.address,
-      this.factory.interface.encodeFunctionData("createAccount", [
-        this.entryPointAddress,
-        this.verifierAddress,
-        this.userId,
-        this.salt,
-      ]),
+      this.factory.interface.encodeFunctionData("createAccount", [this.userId, this.salt]),
     ]);
   }
 

@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import "@account-abstraction/contracts/core/BaseAccount.sol";
 import "@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol";
 import "./SismoVerifier.sol";
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
-contract NinjaAccount is BaseAccount, TokenCallbackHandler {
+contract NinjaAccount is BaseAccount, TokenCallbackHandler, Initializable {
     IEntryPoint private immutable _entryPoint;
     SismoVerifier private immutable _verifier;
-    uint256 private immutable _userId; // Sismo User ID
+    uint256 private _userId; // Sismo User ID
 
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return _entryPoint;
@@ -18,13 +19,13 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler {
 
     receive() external payable {}
 
-    constructor(
-        IEntryPoint entryPoint_,
-        SismoVerifier verifier,
-        uint256 userId
-    ) {
+    constructor(IEntryPoint entryPoint_, SismoVerifier verifier) {
         _entryPoint = entryPoint_;
         _verifier = verifier;
+        _disableInitializers();
+    }
+
+    function initialize(uint256 userId) public virtual initializer {
         _userId = userId;
     }
 
@@ -41,7 +42,6 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler {
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
-        console.logBytes32(userOpHash);
         (uint256 vaultId, bytes memory signedMessage) = _verifier.verify(
             userOp.signature
         );

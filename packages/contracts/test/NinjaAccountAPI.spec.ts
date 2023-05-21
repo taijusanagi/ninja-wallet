@@ -22,7 +22,7 @@ describe("NinjaAccountAPI", () => {
 
     const entryPoint = EntryPoint__factory.connect(entryPointAddress, signer);
     const NinjaAccountFactory = await ethers.getContractFactory("NinjaAccountFactory");
-    const ninjaAccountFactory = await NinjaAccountFactory.deploy();
+    const ninjaAccountFactory = await NinjaAccountFactory.deploy(entryPoint.address, sismoVerifier.address);
 
     await ninjaAccountFactory.deployed();
     const ninjaAccountAPI = new NinjaAccountAPI({
@@ -50,6 +50,10 @@ describe("NinjaAccountAPI", () => {
       target: ethers.constants.AddressZero,
     });
     userOp.signature = responseBytes;
-    await entryPoint.handleOps([{ ...userOp, verificationGasLimit: 2000000 }], signer.address);
+    // this fails without valit proof
+    await entryPoint.handleOps(
+      [{ ...userOp, callGasLimit: 100000, preVerificationGas: 100000, verificationGasLimit: 1000000 }],
+      signer.address
+    );
   });
 });
