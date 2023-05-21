@@ -30,7 +30,7 @@ This is about Stealth Address, however
 
 ## VIDEO DEMO (90 seconds)
 
-https://youtu.be/CDrnmx0LHwQ
+https://www.youtube.com/watch?v=SrzRYC9yDc4
 
 ## PITCH (5 slides)
 
