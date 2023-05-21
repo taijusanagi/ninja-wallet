@@ -3,9 +3,7 @@ import { cookies } from "next/headers";
 import { SismoConnectVerifiedResult, AuthType, SismoConnect } from "@sismo-core/sismo-connect-server";
 import { ethers } from "ethers";
 
-import { unCompressResponse } from "@sismo-core/sismo-connect-client/src/utils/unCompressResponse";
-
-import { sismoConfig } from "@/lib/sismo";
+import { sismoConfig, unCompressResponse } from "@/lib/sismo";
 const sismoConnect = SismoConnect(sismoConfig);
 
 export async function GET(request: NextRequest) {

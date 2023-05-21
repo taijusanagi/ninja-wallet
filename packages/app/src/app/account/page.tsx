@@ -16,8 +16,6 @@ import deployments from "../../../../contracts/deployments.json";
 import { gitcoinPassportGroupId } from "../../../../contracts/lib/sismo";
 const { entryPointAddress, factoryAddress, verifierAddress, paymasterAddress } = deployments;
 
-const bundler = new HttpRpcClient(process.env.NEXT_PUBLIC_BUNDLER_API || "", entryPointAddress, 80001);
-
 export default function Home() {
   const searchParams = useSearchParams();
   const { responseBytes } = useSismoConnect({ config: sismoConfig });
@@ -172,6 +170,11 @@ export default function Home() {
                         if (!userOp) {
                           return;
                         }
+                        const bundler = new HttpRpcClient(
+                          process.env.NEXT_PUBLIC_BUNDLER_API || "",
+                          entryPointAddress,
+                          80001
+                        );
                         const tx = await bundler.sendUserOpToBundler(userOp);
                         console.log("requested", tx);
                       }}

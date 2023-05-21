@@ -29,5 +29,8 @@
     "typescript": "5.0.4",
     "webpack-node-externals": "^3.0.0",
     "yarn": "^1.22.19"
+  },
+  "devDependencies": {
+    "@types/pako": "^2.0.0"
   }
 }
