@@ -5,6 +5,8 @@ import { AiOutlineClose } from "react-icons/ai";
 import { useSearchParams } from "next/navigation";
 import { ethers } from "ethers";
 
+import Image from "next/image";
+
 import { SismoConnectButton, AuthType, useSismoConnect } from "@sismo-core/sismo-connect-react";
 import { Hero } from "@/components/Hero";
 import { sismoConfig } from "@/lib/sismo";
@@ -26,6 +28,13 @@ export default function Home() {
   const [to, setTo] = useState("");
   const [userOpHash, setUserOpHash] = useState("");
   const [userOp, setUserOp] = useState<any>();
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [requestId, setRequestId] = useState("Loading");
+
+  const closeModal = () => setIsOpen(false);
+  const openModal = () => setIsOpen(true);
 
   useEffect(() => {
     const userId = searchParams.get("userId");
@@ -120,8 +129,12 @@ export default function Home() {
               <p className="mt-1 text-xs">{account}</p>
             </div>
             <div className="mt-4">
-              <h2 className="text-md font-medium">Balance</h2>
-              <p className="mt-1 text-xs">{ethers.utils.formatEther(balance)} ETH</p>
+              <h2 className="text-md font-medium">ETH Balance</h2>
+              <p className="mt-1 text-xs">0 ETH</p>
+            </div>
+            <div className="mt-4">
+              <h2 className="text-md font-medium">USDC Balance (dummy)</h2>
+              <p className="mt-1 text-xs">100 USDC</p>
             </div>
             <div className="mt-4">
               {mode !== "send" && (
@@ -170,20 +183,60 @@ export default function Home() {
                         if (!userOp) {
                           return;
                         }
+                        openModal();
                         const bundler = new HttpRpcClient(
                           process.env.NEXT_PUBLIC_BUNDLER_API || "",
                           entryPointAddress,
                           80001
                         );
-                        const tx = await bundler.sendUserOpToBundler(userOp);
-                        console.log("requested", tx);
+                        const requestId = await bundler.sendUserOpToBundler(userOp);
+                        console.log("requestId", requestId);
+                        setRequestId(requestId);
                       }}
                     >
                       Send Tx
                     </button>
+                    {isOpen && (
+                      <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-50 text-gray-800">
+                        <div className="bg-white rounded-md shadow-lg w-80">
+                          <div className="p-4">
+                            <div className="animate-fadeInOut backdrop-blur-md flex items-center justify-center">
+                              <Image
+                                src="/ninja_transparent.png"
+                                alt="Ninja Wallet"
+                                width={120}
+                                height={120}
+                                className="object-cover"
+                              />
+                            </div>
+                            <p className="text-sm font-medium text-center">Your AA Tx is sent...</p>
+                            <div className="mt-4">
+                              <button
+                                className={`border py-2 px-4 rounded-md w-full`}
+                                onClick={() => {
+                                  window.location.href = "/";
+                                }}
+                              >
+                                Close
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
+            </div>
+            <div className="mt-4">
+              <p
+                className="mt-1 text-xs text-right text-blue-500 hover:text-blue-700 underline cursor-pointer"
+                onClick={() => {
+                  alert("not implemented");
+                }}
+              >
+                Connect dApps with Wallet Connect
+              </p>
             </div>
           </div>
         </div>

@@ -42,9 +42,13 @@ taijusanagi
 
 https://github.com/taijusanagi/ethdams
 
-## VIDEO DEMO
+## VIDEO DEMO (90 seconds)
 
-TBD
+https://youtu.be/CDrnmx0LHwQ
+
+## PITCH (5 slides)
+
+https://docs.google.com/presentation/d/1oqw3CC1clEO2-Xg5Vi9CbZH0xRxL0QpBgo212AXO6Ck/edit?usp=sharing
 
 ## CONTRACT ADDRESSES
 
