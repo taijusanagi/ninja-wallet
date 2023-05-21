@@ -28,20 +28,6 @@ This is about Stealth Address, however
 
 ![how-it-works](./docs/how-it-works.png)
 
-## DISCORD AND TELEGRAM USER NAME
-
-### DISCORD
-
-taijusanagi#5368
-
-### TELEGRAM
-
-taijusanagi
-
-## REPOSITORY WITH PROJECT'S CODE
-
-https://github.com/taijusanagi/ethdams
-
 ## VIDEO DEMO (90 seconds)
 
 https://youtu.be/CDrnmx0LHwQ
