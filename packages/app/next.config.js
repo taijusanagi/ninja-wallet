@@ -4,6 +4,7 @@
 
 module.exports = {
   reactStrictMode: true,
+  serverComponentsExternalPackages: ["@sismo-core/sismo-connect-server"],
   webpack: (config, { isServer }) => {
     // if (!isServer) {
     //   config.externals = [nodeExternals()];

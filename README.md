@@ -4,11 +4,27 @@
 
 ![key](./docs/key.png)
 
-## DESCRIPTION OF THE PROJECT
+## SHORT DESCRIPTION OF THE PROJECT
 
 Ninja Wallet, powered by Sismo, offers a stealth account abstraction wallet experience, ensuring secure interactions with dApps while maintaining user anonymity.
 
-## TECHNICAL DETAIL
+## LONG DESCRIPTION OF THE PROJECT
+
+### PROBLEM STATEMENT
+
+This is about Stealth Address, however
+
+- Current stealth addresses are challenging to manage.
+- Lack the ability to connect credential data, crucial for verifying identities.
+- Transactions are not possible if native tokens are present.
+
+### SOLUTION
+
+- Ninja Wallet offers a simplified zk-based stealth address system with Sismo.
+- Allows attaching privacy preserved credentials for secure identity verification.
+- Transactions can be made even without native tokens.
+
+### TECHNICAL DETAIL
 
 TBD
 
