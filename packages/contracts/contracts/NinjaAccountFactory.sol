@@ -9,15 +9,11 @@ import "hardhat/console.sol";
 contract NinjaAccountFactory {
     function createAccount(
         IEntryPoint entryPoint,
-        SismoVerifier sismoVerifier,
+        SismoVerifier verifier,
         uint256 userId,
         uint256 salt
     ) public returns (NinjaAccount) {
         return
-            new NinjaAccount{salt: bytes32(salt)}(
-                entryPoint,
-                sismoVerifier,
-                userId
-            );
+            new NinjaAccount{salt: bytes32(salt)}(entryPoint, verifier, userId);
     }
 }

@@ -9,7 +9,7 @@ import "hardhat/console.sol";
 
 contract NinjaAccount is BaseAccount, TokenCallbackHandler {
     IEntryPoint private immutable _entryPoint;
-    SismoVerifier private immutable _sismoVerifier;
+    SismoVerifier private immutable _verifier;
     uint256 private immutable _userId; // Sismo User ID
 
     function entryPoint() public view virtual override returns (IEntryPoint) {
@@ -20,11 +20,11 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler {
 
     constructor(
         IEntryPoint entryPoint_,
-        SismoVerifier sismoVerifier,
+        SismoVerifier verifier,
         uint256 userId
     ) {
         _entryPoint = entryPoint_;
-        _sismoVerifier = sismoVerifier;
+        _verifier = verifier;
         _userId = userId;
     }
 
@@ -41,7 +41,12 @@ contract NinjaAccount is BaseAccount, TokenCallbackHandler {
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
-        _sismoVerifier.verify(userOp.signature);
+        console.logBytes32(userOpHash);
+        (uint256 vaultId, bytes memory signedMessage) = _verifier.verify(
+            userOp.signature
+        );
+        require(vaultId == _userId, "invalid vaultId id");
+        require(bytes32(signedMessage) == userOpHash, "invalid signed message");
         return 0;
     }
 

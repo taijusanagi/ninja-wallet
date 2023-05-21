@@ -13,7 +13,7 @@ import { NinjaAccountAPI } from "../../../../contracts/lib/account-abstraction/N
 import { rpc } from "../../../../contracts/lib/web3";
 
 import deployments from "../../../../contracts/deployments.json";
-const { entryPointAddress, factoryAddress } = deployments;
+const { entryPointAddress, factoryAddress, verifierAddress } = deployments;
 
 const bundler = new HttpRpcClient(process.env.NEXT_PUBLIC_BUNDLER_API || "", entryPointAddress, 80001);
 
@@ -37,6 +37,7 @@ export default function Home() {
     const ninjaAccountAPI = new NinjaAccountAPI({
       entryPointAddress,
       factoryAddress,
+      verifierAddress,
       userId,
       salt,
       provider,
@@ -133,7 +134,7 @@ export default function Home() {
                   }}
                   config={sismoConfig}
                   auth={{ authType: AuthType.VAULT }}
-                  // signature={{ message: userOpHash }}
+                  signature={{ message: "0x8221aa5ae5cef8b75f88f917d3a6ee1cf48d98b5c7be913fb925ef04c8720053" }}
                   text={userOpHash ? "Sign UserOp with Sismo" : "Creating User Op..."}
                   callbackUrl={`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/callback/tx`}
                 />

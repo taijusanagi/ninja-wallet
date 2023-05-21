@@ -12,14 +12,14 @@ import {
 
 export interface NinjaAccountApiParams {
   factoryAddress: string;
-  sismoVerifierAddress: string;
+  verifierAddress: string;
   userId: string;
   salt: string;
 }
 
 export class NinjaAccountAPI extends BaseAccountAPI {
   factoryAddress: string;
-  sismoVerifierAddress: string;
+  verifierAddress: string;
   userId: string;
   salt: string;
 
@@ -29,7 +29,7 @@ export class NinjaAccountAPI extends BaseAccountAPI {
   constructor(params: any) {
     super(params);
     this.factoryAddress = params.factoryAddress;
-    this.sismoVerifierAddress = params.sismoVerifierAddress;
+    this.verifierAddress = params.verifierAddress;
     this.userId = params.userId;
     this.salt = params.salt;
   }
@@ -54,7 +54,7 @@ export class NinjaAccountAPI extends BaseAccountAPI {
       this.factory.address,
       this.factory.interface.encodeFunctionData("createAccount", [
         this.entryPointAddress,
-        this.sismoVerifierAddress,
+        this.verifierAddress,
         this.userId,
         this.salt,
       ]),

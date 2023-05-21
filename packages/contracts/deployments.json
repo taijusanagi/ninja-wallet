@@ -1,4 +1,5 @@
 {
   "entryPointAddress": "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
-  "factoryAddress": "0x93762eef2319a76d636a00c936665755780165f3"
+  "factoryAddress": "0x6f8fdec29ba08a0165ed6e75b422146c49e2341e",
+  "verifierAddress": "0xac731983b6a4934c0985d8c7222ff82bb7c7333a"
 }

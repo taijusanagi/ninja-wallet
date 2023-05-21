@@ -1,6 +1,7 @@
 import { ethers } from "hardhat";
 import { DeterministicDeployer } from "@account-abstraction/sdk";
-import { NinjaAccountFactory__factory } from "../typechain-types";
+import { NinjaAccountFactory__factory, SismoVerifier__factory } from "../typechain-types";
+import { appId } from "../lib/sismo";
 
 import * as fs from "fs";
 import * as path from "path";
@@ -20,11 +21,25 @@ async function main() {
   await deterministicDeployer.deterministicDeploy(factorDeploymentCode);
   console.log("Factory at", factoryAddress);
 
+  const verifierDeploymentArgument = ethers.utils.defaultAbiCoder.encode(["bytes16"], [appId]);
+  const verifierDeploymentCode = ethers.utils.solidityPack(
+    ["bytes", "bytes"],
+    [SismoVerifier__factory.bytecode, verifierDeploymentArgument]
+  );
+
+  const verifierAddress = DeterministicDeployer.getAddress(verifierDeploymentCode);
+  if (await deterministicDeployer.isContractDeployed(verifierAddress)) {
+    console.log("Verifier already deployed at", verifierAddress);
+  }
+  await deterministicDeployer.deterministicDeploy(verifierDeploymentCode);
+  console.log("Verifier at", verifierAddress);
+
   fs.writeFileSync(
     path.join(__dirname, `../deployments.json`),
     JSON.stringify({
       entryPointAddress,
       factoryAddress,
+      verifierAddress,
     })
   );
 }

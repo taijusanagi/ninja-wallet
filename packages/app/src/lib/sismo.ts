@@ -1,5 +1,5 @@
-import { SismoConnectServerConfig } from "@sismo-core/sismo-connect-server";
+import { appId } from "../../../contracts/lib/sismo";
 
-export const sismoConfig: SismoConnectServerConfig = {
-  appId: "0x49c751f1595e8b3016096a7df01d2a96",
+export const sismoConfig = {
+  appId,
 };
