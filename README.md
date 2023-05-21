@@ -6,7 +6,7 @@
 
 ## SHORT DESCRIPTION OF THE PROJECT
 
-Ninja Wallet, powered by Sismo, offers a stealth account abstraction wallet experience, ensuring secure interactions with dApps while maintaining user anonymity.
+Ninja Wallet, powered by Sismo, offers a stealth account abstraction wallet experience, with privacy-preserved gas-less transaction.
 
 ## LONG DESCRIPTION OF THE PROJECT
 
@@ -28,7 +28,7 @@ This is about Stealth Address, however
 
 ![how-it-works](./docs/how-it-works.png)
 
-## VIDEO DEMO (90 seconds)
+## VIDEO DEMO (1 minute)
 
 https://www.youtube.com/watch?v=SrzRYC9yDc4
 
