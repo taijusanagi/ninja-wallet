@@ -8,10 +8,10 @@ module.exports = {
     if (!isServer) {
       config.externals = [nodeExternals()];
     }
-    // config.module.rules.push({
-    //   test: /\.tsx?$/,
-    //   use: [options.defaultLoaders.babel],
-    // });
+    config.module.rules.push({
+      test: /\.tsx?$/,
+      use: [options.defaultLoaders.babel],
+    });
     return config;
   },
 };
