@@ -26,7 +26,7 @@ This is about Stealth Address, however
 
 ### TECHNICAL DETAIL
 
-TBD
+![how-it-works](./docs/how-it-works.png)
 
 ## DISCORD AND TELEGRAM USER NAME
 
@@ -55,5 +55,3 @@ https://github.com/taijusanagi/ninja-wallet/blob/main/packages/contracts/deploym
 ## WEBSITE URL
 
 https://ninja-wallet.vercel.app/
-
-- Currently, Sismo serverside verification works only in local because of the server side verification timeout
