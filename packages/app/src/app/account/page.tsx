@@ -22,10 +22,11 @@ export default function Home() {
   const { responseBytes } = useSismoConnect({ config: sismoConfig });
   const [ninjaAccountAPI, setNinjaAccountAPI] = useState<NinjaAccountAPI>();
   const [account, setAccount] = useState(ethers.constants.AddressZero);
+  const [balance, setBalance] = useState(ethers.BigNumber.from("0"));
   const [mode, setMode] = useState<"input" | "calc" | "sign" | "send">("input");
   const [to, setTo] = useState("");
   const [userOpHash, setUserOpHash] = useState("");
-  const [userOp, setUserOp] = useState();
+  const [userOp, setUserOp] = useState<any>();
 
   useEffect(() => {
     const userId = searchParams.get("userId");
@@ -46,6 +47,10 @@ export default function Home() {
     ninjaAccountAPI.getAccountAddress().then((account) => {
       console.log("account", account);
       setAccount(account);
+
+      provider.getBalance(account).then((balance) => {
+        setBalance(balance);
+      });
     });
   }, [searchParams]);
 
@@ -54,7 +59,7 @@ export default function Home() {
       return;
     }
     setMode("calc");
-    ninjaAccountAPI.createUnsignedUserOp({ target: to, data: "0x" }).then((userOp) => {
+    ninjaAccountAPI.createUnsignedUserOp({ target: to, data: "0x", value: balance }).then((userOp) => {
       userOp = {
         ...userOp,
         callGasLimit: ethers.utils.hexlify(100000),
@@ -100,7 +105,7 @@ export default function Home() {
       <div className="bg-gradient-to-r from-custom-1 to-custom-2 text-white h-screen w-full flex flex-col items-center justify-center text-center text-white p-8">
         <Hero />
         <div className="mt-8">
-          <div className="relative bg-gradient-to-r from-custom-2 to-custom-1 rounded-lg p-8 text-left">
+          <div className="relative bg-gradient-to-r from-custom-2 to-custom-1 rounded-lg p-6 text-left max-w-md">
             <AiOutlineClose
               className="absolute top-4 right-4 text-white cursor-pointer"
               onClick={() => {
@@ -110,6 +115,10 @@ export default function Home() {
             <div className="mt-4">
               <h2 className="text-md font-medium">Stealth Account</h2>
               <p className="mt-1 text-xs">{account}</p>
+            </div>
+            <div className="mt-4">
+              <h2 className="text-md font-medium">Balance</h2>
+              <p className="mt-1 text-xs">{ethers.utils.formatEther(balance)} ETH</p>
             </div>
             <div className="mt-4">
               {mode !== "send" && (
@@ -126,6 +135,7 @@ export default function Home() {
                   />
                 </>
               )}
+
               {(mode === "calc" || mode === "sign") && (
                 <SismoConnectButton
                   loading={mode != "sign"}
@@ -141,22 +151,30 @@ export default function Home() {
                 />
               )}
               {mode === "send" && (
-                <button
-                  className={`mb-4 border text-white py-2 px-4 rounded-md w-full ${
-                    (account == ethers.constants.AddressZero || !userOp) && "opacity-50 cursor-not-allowed"
-                  }`}
-                  disabled={account == ethers.constants.AddressZero || !userOp}
-                  onClick={async () => {
-                    console.log("send tx");
-                    if (!userOp) {
-                      return;
-                    }
-                    const tx = await bundler.sendUserOpToBundler(userOp);
-                    console.log("requested", tx);
-                  }}
-                >
-                  Send Tx
-                </button>
+                <>
+                  <div className="mt-4">
+                    <h2 className="text-md font-medium">Call data</h2>
+                    <p className="mt-1 text-xs break-all">{userOp.callData}</p>
+                  </div>
+                  <div className="mt-4">
+                    <button
+                      className={`mb-4 border text-white py-2 px-4 rounded-md w-full ${
+                        (account == ethers.constants.AddressZero || !userOp) && "opacity-50 cursor-not-allowed"
+                      }`}
+                      disabled={account == ethers.constants.AddressZero || !userOp}
+                      onClick={async () => {
+                        console.log("send tx");
+                        if (!userOp) {
+                          return;
+                        }
+                        const tx = await bundler.sendUserOpToBundler(userOp);
+                        console.log("requested", tx);
+                      }}
+                    >
+                      Send Tx
+                    </button>
+                  </div>
+                </>
               )}
             </div>
           </div>
